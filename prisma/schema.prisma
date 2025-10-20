@@ -7,31 +7,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
+//강사
+model Instructor {
+  id          String  @id @default(cuid())  //cuid
+  name        String                        //강사명
+  specialty   String                        //전문분야
+  experience  Int                           //경력
+  bio         String                        //소개글
+  imgPath     String?                       //이미지
+  
+  licenses  InstructorLicense[]
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//강사 자격증
+model InstructorLicense {
+  id              String  @id @default(cuid())  //cuid
+  instructor_id   String                        //Instructor FK
+  license         String                        //자격증
+
+  instructor   Instructor @relation(fields: [instructor_id], references: [id], onDelete: Cascade)
+}
+
+//공지사항 그룹
+model NoticeGroup {
+  id        String  @id @default(cuid())  //cuid
+  group_name String                        //공지사항 그룹명
+
+  notices   Notice[]
+}
+
+//공지사항
+model Notice {
+  id            String    @id @default(cuid())  //cuid
+  created_at    DateTime  @default(now())       //작성일
+  group_id      String                          //NoticeGroup FK
+  description   String                          //설명
+
+  group     NoticeGroup @relation(fields: [group_id], references: [id], onDelete: Cascade)
+}
+
+//다이빙 코스
+model Course {
+  id                String  @id @default(cuid())     // cuid
+  course_name       String                           // 코스명
+  level             String                           // 난이도
+  description       String                           // 설명
+  duration_start    String                           // 시작 기간
+  duration_end      String                           // 종료 기간
+  capacity          Int                              // 최대 인원
+  location          String                           // 장소
+  price             Int                              // 금액
+  isClosed          Boolean @default(false)          // 마감여부
+}
+
+//투어 코스
+model Course {
+  id                String  @id @default(cuid())     // cuid
+  course_name       String                           // 코스명
+  level             String                           // 난이도
+  description       String                           // 설명
+  duration_start    String                           // 시작 기간
+  duration_end      String                           // 종료 기간
+  capacity          Int                              // 최대 인원
+  location          String                           // 장소
+  price             Int                              // 금액
+  isClosed          Boolean @default(false)          // 마감여부
 }
 
 model User {
@@ -50,33 +90,6 @@ model User {
   reviews     Review[]
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-model Course {
-  id          String   @id @default(cuid())
-  title       String
-  titleKo     String
-  description String   @db.Text
-  price       Int
-  duration    Int      // in hours
-  maxStudents Int
-  level       String   // BEGINNER, INTERMEDIATE, ADVANCED
-  category    String   // COURSE, TRAINING, TOUR
-  imageUrl    String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  schedules CourseSchedule[]
-  bookings  Booking[]
-}
-
 model CourseSchedule {
   id        String   @id @default(cuid())
   courseId  String
@@ -87,22 +100,6 @@ model CourseSchedule {
 
   course   Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
   bookings Booking[]
-}
-
-model Booking {
-  id         String        @id @default(cuid())
-  userId     String
-  courseId   String
-  scheduleId String
-  status     BookingStatus @default(PENDING)
-  totalPrice Int
-  notes      String?
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-
-  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course   Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  schedule CourseSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 }
 
 model Review {
@@ -139,11 +136,4 @@ model FAQ {
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  COMPLETED
 }
