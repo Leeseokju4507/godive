@@ -1,31 +1,22 @@
 import { initTRPC, TRPCError } from "@trpc/server"
-import type { CreateNextContextOptions } from "@trpc/server/adapters/next"
-import type { Session } from "next-auth"
+import { type Session } from "next-auth"
 import superjson from "superjson"
 import { ZodError } from "zod"
 import { db } from "../db"
-import { getServerAuthSession } from "../auth"
+import { getToken } from "next-auth/jwt"
 
-interface CreateContextOptions {
-  session: Session | null
-}
+export const createTRPCContext = async (opts: { req: Request }) => {
+  // 브라우저 Request에서 쿠키 가져오기
+  const cookie = opts.req.headers.get("cookie") ?? "";
 
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  return {
-    session: opts.session,
-    db,
-  }
-}
+  // getToken 호출 시 NextApiRequest 최소 형태 제공
+  const session = await getToken({
+    req: { headers: { cookie } } as any, // 타입 강제
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts
-  const session = await getServerAuthSession()
-
-  return createInnerTRPCContext({
-    session,
-  })
-}
-
+  return { session, db };
+};
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {

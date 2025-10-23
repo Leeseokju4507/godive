@@ -25,9 +25,14 @@ export function Footer() {
               SDITDI, SNSI, CMAS, PADI 공인 강사 및 트레이너 센터로서, 15년 이상 수중・수상 교육과 대학 강의를 통해 1,000명 이상의 다이버를 배출한 노하우를 바탕으로 전문적이고 안전한 다이빙 교육을 제공합니다.
             </p>
             <div className="flex space-x-3">
-              <Button variant="ghost" size="sm" className="p-2 text-red-400">
+              <a
+                href="https://www.instagram.com/sg_dive?igsh=MWZ4OGs3MWJqZ3V5&utm_source=qr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center p-2 rounded bg-transparent border-none hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
+              >
                 <Instagram className="h-5 w-5" />
-              </Button>
+              </a>
             </div>
           </div>
 
@@ -59,17 +64,17 @@ export function Footer() {
                 <MessageCircle className="h-4 w-4 text-primary" />
                 <span className="">@surgy</span>
               </div>
-              <div className="flex items-start gap-2 text-sm text-red-400">
+              <div className="flex items-start gap-2 text-sm">
                 <MapPin className="h-4 w-4 text-primary mt-0.5" />
                 <span>
-                  서울특별시 강남구
+                  서울시 성동구 행당로
                   <br />
-                  다이빙 교육센터
+                  11길 9-7 b1
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Clock className="h-4 w-4 text-primary" />
-                <span className="text-red-400">평일 09:00-18:00</span>
+                <span className="">00:00-24:00</span>
               </div>
             </div>
           </div>
@@ -81,7 +86,6 @@ export function Footer() {
               <p>써지 투어 엔 다이브</p>
               <p>대표: 이주영</p>
               <p>사업자등록번호: 478-48-00879</p>
-              <p className="text-red-400">통신판매업신고: 제2023-서울강남-1234호</p>
             </div>
           </div>
         </div>
@@ -99,7 +103,7 @@ export function Footer() {
                 이용안내
               </Link>
             </div>
-            <p className="text-xs text-muted-foreground">Copyright © 2025 SURGY ROUR & DIVE All rights reserved.</p>
+            <p className="text-xs text-muted-foreground">Copyright © 2025 SURGY TOUR & DIVE All rights reserved.</p>
           </div>
         </div>
       </div>

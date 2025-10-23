@@ -1,14 +1,14 @@
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { getServerSession, type DefaultSession, type NextAuthOptions } from "next-auth"
-import type { Adapter } from "next-auth/adapters"
-import CredentialsProvider from "next-auth/providers/credentials"
-import { db } from "./db"
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { getServerSession, type DefaultSession, type NextAuthOptions } from "next-auth";
+import type { Adapter } from "next-auth/adapters";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { db } from "./db";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      id: string
-    } & DefaultSession["user"]
+      id: string;
+    } & DefaultSession["user"];
   }
 }
 
@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
       ...session,
       user: {
         ...session.user,
-        id: token.sub,
+        id: token.sub!,
       },
     }),
   },
@@ -31,27 +31,20 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
+        if (!credentials?.email || !credentials?.password) return null;
 
         const user = await db.user.findUnique({
           where: { email: credentials.email },
-        })
+        });
 
-        if (!user) {
-          return null
-        }
-
-        // Note: In production, you should hash passwords
-        // const isPasswordValid = await compare(credentials.password, user.password);
+        if (!user) return null;
 
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           image: user.image,
-        }
+        };
       },
     }),
   ],
@@ -59,6 +52,10 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
-}
+};
 
-export const getServerAuthSession = () => getServerSession(authOptions)
+/**
+ * App Router용 getServerAuthSession
+ */
+export const getServerAuthSession = (opts?: { req?: Request; res?: Response }) =>
+  getServerSession(opts?.req as any, opts?.res as any, authOptions);

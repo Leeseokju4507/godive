@@ -4,10 +4,13 @@ import { reviewRouter } from "./routers/review"
 import { noticeRouter } from "./routers/notice"
 import { faqRouter } from "./routers/faq"
 import { createCallerFactory, createTRPCRouter } from "./trpc"
-import { calendarRouter } from "./routers/calendar"
+import { scheduleRouter } from "./routers/schedule"
+import { userRouter } from "./routers/user"
 
 export const appRouter = createTRPCRouter({
-  calendar: calendarRouter,
+  schedule: scheduleRouter,
+  user: userRouter,
+
   //삭제 예정
   course: courseRouter,
   booking: bookingRouter,
